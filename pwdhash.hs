@@ -3,8 +3,8 @@ import Codec.Utils (Octet)
 import Control.Applicative
 import Control.Monad.State
 import Data.HMAC
+import System.Console.Haskeline
 import System.Environment
-import System.IO
 
 toOctet :: String -> [Octet]
 toOctet = map (fromIntegral . fromEnum)
@@ -82,10 +82,6 @@ pwdhash password realm = evalState (run prefix) extra
                rotate s5 <$> nextExtra
 
 main = do
-  hSetEcho stdin False
-  hSetBuffering stdout NoBuffering
-  putStr "Password: "
   [realm] <- getArgs
-  password <- getLine
-  putStrLn ""
+  Just password <- runInputT defaultSettings $ getPassword (Just '*') "Password: "
   putStrLn $ pwdhash password realm
