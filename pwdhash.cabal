@@ -15,3 +15,4 @@ Cabal-version:       >=1.2
 Executable pwdhash
   Main-is:             pwdhash.hs
   Build-depends:       base (>= 4), Crypto, dataenc, haskeline, mtl
+  ghc-options: -O2 -W

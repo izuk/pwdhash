@@ -19,10 +19,11 @@ contains from to s = any f s
   where
     f ch = ch >= from && ch <= to
 
-isAlphaNum :: Char -> Bool
-isAlphaNum ch = (ch >= 'A' && ch <= 'Z') ||
-                (ch >= 'a' && ch <= 'z') ||
-                (ch >= '0' && ch <= '9')
+isNotAlphaNum :: Char -> Bool
+isNotAlphaNum ch = not $ (ch >= 'A' && ch <= 'Z') ||
+                         (ch >= 'a' && ch <= 'z') ||
+                         (ch >= '0' && ch <= '9') ||
+                         (ch == '_')
 
 between :: Char -> Char -> Int -> Char
 between from to offset = toEnum $ from' + offset `rem` (to' - from' + 1)
@@ -52,15 +53,15 @@ replace from to s = do
         else nextBetween from to
   return $ s ++ [ch]
 
-addNonAlphaNum :: Bool -> String -> Extra String
-addNonAlphaNum f s = if f && (any (not . isAlphaNum) s)
-                     then do ch <- nextExtraChar
-                             return $ s ++ [ch]
-                     else return $ s ++ ['+']
+addNonAlphaNum :: String -> Extra String
+addNonAlphaNum s = if any isNotAlphaNum s
+                   then do ch <- nextExtraChar
+                           return $ s ++ [ch]
+                   else return $ s ++ ['+']
 
 replaceNonAlphaNum :: String -> Extra String
 replaceNonAlphaNum [] = return []
-replaceNonAlphaNum (ch:ss) = if not $ isAlphaNum ch
+replaceNonAlphaNum (ch:ss) = if isNotAlphaNum ch
                              then do ch' <- nextBetween 'A' 'Z'
                                      rest <- replaceNonAlphaNum ss
                                      return $ ch' : rest
@@ -69,7 +70,7 @@ replaceNonAlphaNum (ch:ss) = if not $ isAlphaNum ch
 pwdhash :: String -> String -> String
 pwdhash password realm = evalState (run prefix) extra
   where
-    nonAlphaNum = any (not . isAlphaNum) password
+    nonAlphaNum = any isNotAlphaNum password
     hash = encode $ hmac_md5 (toOctet password) (toOctet realm)
     size = length password + 2
     startingSize = size - 4
@@ -77,10 +78,15 @@ pwdhash password realm = evalState (run prefix) extra
     run s = do s1 <- replace 'A' 'Z' s
                s2 <- replace 'a' 'z' s1
                s3 <- replace '0' '9' s2
-               s4 <- addNonAlphaNum nonAlphaNum s3
-               s5 <- replaceNonAlphaNum s4
+               s4 <- if nonAlphaNum 
+                     then addNonAlphaNum s3 
+                     else return (s3 ++ ['+'])
+               s5 <- if not nonAlphaNum 
+                     then replaceNonAlphaNum s4
+                     else return s4
                rotate s5 <$> nextExtra
 
+main :: IO ()
 main = do
   [realm] <- getArgs
   Just password <- runInputT defaultSettings $ getPassword (Just '*') "Password: "
