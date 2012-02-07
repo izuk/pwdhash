@@ -1,0 +1,17 @@
+Name:                pwdhash
+Version:             0.1
+Synopsis:            Implementation of the pwdhash algorithm
+Description:
+  A Haskell implementation of the algorithm for generating password
+  hashes described at https://www.pwdhash.com/.
+License:             BSD3
+License-file:        LICENSE
+Author:              Itai Zukerman
+Maintainer:          zukerman@math-hat.com
+Copyright:           (c) 2012 Itai Zukerman
+Category:            Util
+Build-type:          Simple
+Cabal-version:       >=1.2
+Executable pwdhash
+  Main-is:             pwdhash.hs
+  Build-depends:       base (>= 4), Crypto, dataenc, mtl
