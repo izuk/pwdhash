@@ -1,18 +1,40 @@
-Name:                pwdhash
-Version:             0.1
-Synopsis:            Implementation of the pwdhash algorithm
-Description:
+name:                pwdhash
+version:             0.1.0.0
+synopsis:            Implementation of the pwdhash algorithm
+description:
   A Haskell implementation of the algorithm for generating password
   hashes described at https://www.pwdhash.com/.
-License:             BSD3
-License-file:        LICENSE
-Author:              Itai Zukerman
-Maintainer:          zukerman@math-hat.com
-Copyright:           (c) 2012 Itai Zukerman
-Category:            Util
-Build-type:          Simple
-Cabal-version:       >=1.2
-Executable pwdhash
-  Main-is:             pwdhash.hs
-  Build-depends:       base (>= 4), Crypto, dataenc, haskeline, mtl
-  ghc-options: -O2 -W
+license:             BSD3
+license-file:        LICENSE
+author:              Itai Zukerman
+maintainer:          zukerman@math-hat.com
+copyright:           (c) 2012 Itai Zukerman
+category:            Util
+build-type:          Simple
+cabal-version:       >=1.10
+
+library
+  exposed-modules:     Codec.Pwdhash
+  build-depends:       base >=4.7 && <4.8,
+                       Crypto,
+                       dataenc,
+                       transformers
+  hs-source-dirs:      src
+  default-language:    Haskell2010
+
+executable pwdhash
+  main-is:             pwdhash.hs
+  build-depends:       base >=4.7 && <4.8,
+                       haskeline,
+                       pwdhash
+  default-language:    Haskell2010
+
+test-suite regression
+  type:                exitcode-stdio-1.0
+  main-is:             regression.hs
+  build-depends:       base >=4.7 && <4.8,
+                       QuickCheck,
+                       process,
+                       pwdhash
+  hs-source-dirs:      test
+  default-language:    Haskell2010
