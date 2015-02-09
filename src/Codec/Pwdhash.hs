@@ -7,6 +7,7 @@ import Codec.Utils (Octet)
 import Control.Applicative ((<$>))
 import Control.Monad.Trans.State (State, evalState, get, put)
 import Data.HMAC (hmac_md5)
+import Data.List (dropWhileEnd)
 
 toOctets :: String -> [Octet]
 toOctets = map (fromIntegral . fromEnum)
@@ -38,7 +39,7 @@ nextExtra = do
   es <- get
   case es of
     [] -> return 0
-    (e : et) -> put et >> return e
+    e : et -> put et >> return e
 
 nextExtraChar :: Extra Char
 nextExtraChar = toEnum <$> nextExtra
@@ -57,7 +58,7 @@ addNonAlphaNum :: String -> Extra String
 addNonAlphaNum s = if any isNotAlphaNum s
                    then do ch <- nextExtraChar
                            return $ s ++ [ch]
-                   else return $ s ++ ['+']
+                   else return $ s ++ "+"
 
 replaceNonAlphaNum :: String -> Extra String
 replaceNonAlphaNum [] = return []
@@ -71,16 +72,17 @@ pwdhash :: String -> String -> String
 pwdhash password realm = evalState (run prefix) extra
   where
     nonAlphaNum = any isNotAlphaNum password
-    hash = encode $ hmac_md5 (toOctets password) (toOctets realm)
+    hash = hmac_md5 (toOctets password) (toOctets realm)
+    base64 = dropWhileEnd (== '=') $ encode hash
     size = length password + 2
     startingSize = size - 4
-    (prefix, extra) = map fromEnum <$> splitAt startingSize hash
+    (prefix, extra) = map fromEnum <$> splitAt startingSize base64
     run s = do s1 <- replace 'A' 'Z' s
                s2 <- replace 'a' 'z' s1
                s3 <- replace '0' '9' s2
                s4 <- if nonAlphaNum
                      then addNonAlphaNum s3
-                     else return (s3 ++ ['+'])
+                     else return (s3 ++ "+")
                s5 <- if not nonAlphaNum
                      then replaceNonAlphaNum s4
                      else return s4

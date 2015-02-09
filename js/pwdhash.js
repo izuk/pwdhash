@@ -330,7 +330,12 @@ SPH_HashedPassword.prototype = {
   }
 }
 
-/******************************************************************************/
+/**
+ * JavaScript implementation copied from:
+ *
+ * 6d03025f455869185b57b5c138fd1c01 https://www.pwdhash.com/md5.js
+ * 2c2851f1563549b16661d1432af34e2f https://www.pwdhash.com/hashed-password.js
+ */
 
 function pwdhash(password, realm) {
     var hash = new SPH_HashedPassword(password, realm);
