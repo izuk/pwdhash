@@ -1,5 +1,5 @@
 name:                pwdhash
-version:             0.1.0.0
+version:             0.2.0.0
 synopsis:            Implementation of the pwdhash algorithm
 description:
   A Haskell implementation of the algorithm for generating password
