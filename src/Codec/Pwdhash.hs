@@ -4,7 +4,6 @@ module Codec.Pwdhash (
 
 import Codec.Binary.Base64 (encode)
 import Codec.Utils (Octet)
-import Control.Applicative ((<$>))
 import Control.Monad.Trans.State (State, evalState, get, put)
 import Data.HMAC (hmac_md5)
 import Data.List (dropWhileEnd)
