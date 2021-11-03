@@ -1,7 +1,10 @@
 import Codec.Pwdhash (pwdhash)
 import System.Process (readProcess)
-import Test.QuickCheck ((==>), Property, quickCheck)
+import Test.Framework (Test, defaultMain)
+import Test.Framework.Providers.QuickCheck2 (testProperty)
+import Test.QuickCheck ((==>), Property)
 import Test.QuickCheck.Monadic (assert, monadicIO, run)
+
 
 execNode :: String -> String -> IO String
 execNode password realm = readProcess "node" ["js/pwdhash.js", password, realm] ""
@@ -17,5 +20,10 @@ prop_regression password realm = noNull (password ++ realm) ==> prop
       let actual = pwdhash password realm
       assert $ actual == expected
 
+tests :: [Test]
+tests =
+  [ testProperty "regression" prop_regression
+  ]
+
 main :: IO ()
-main = quickCheck prop_regression
+main = defaultMain tests

@@ -1,5 +1,6 @@
-{ mkDerivation, base, Crypto, dataenc, haskeline, process
-, QuickCheck, stdenv, transformers
+{ mkDerivation, base, Crypto, dataenc, haskeline, lib, process
+, QuickCheck, test-framework, test-framework-quickcheck2
+, transformers
 }:
 mkDerivation {
   pname = "pwdhash";
@@ -9,7 +10,9 @@ mkDerivation {
   isExecutable = true;
   libraryHaskellDepends = [ base Crypto dataenc transformers ];
   executableHaskellDepends = [ base haskeline ];
-  testHaskellDepends = [ base process QuickCheck ];
+  testHaskellDepends = [
+    base process QuickCheck test-framework test-framework-quickcheck2
+  ];
   description = "Implementation of the pwdhash algorithm";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }
