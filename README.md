@@ -17,8 +17,5 @@ X-windows:
 To run the tests you need nodejs to execute js/pwdhash.js.  Then:
 
     $ cabal test
-
-# XMonad
-
-TODO: Integrate with XMonad, possibly with XMonad.Prompt.Input and
-XMonad.Util.Paste.
+    
+[![Haskell CI](https://github.com/izuk/pwdhash/actions/workflows/haskell.yml/badge.svg?branch=master)](https://github.com/izuk/pwdhash/actions/workflows/haskell.yml)
